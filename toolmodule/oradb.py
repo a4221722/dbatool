@@ -60,6 +60,7 @@ class Oradb():
             if report == 0:
                 print(''.join(header))
                 for row in result:
+                    row=[str(i) for i in row]
                     print(json.dumps(row))
                     #print('|  '.join(self.maniRt(val) for val in row))
             elif report == 1:
