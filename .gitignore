@@ -1,0 +1,9 @@
+db/*
+report/*
+log/*
+include/*
+instantclient_12_2/*
+lib/*
+bin/*
+*.pyc
+*.swp
