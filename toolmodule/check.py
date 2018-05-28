@@ -77,7 +77,7 @@ class Check():
     @args('-N',dest='secname',action='store',
          help='second instance name')
     @args('-T',dest='tablename',required=True,action='store',nargs='*',
-         help=' table list')
+          help=' table list. use : between two different tables')
     #@args('-s',dest='schemaname',action='store',nargs='*',
     #     help=' schema list')
 
@@ -151,7 +151,7 @@ class Check():
     @args('-N',dest='secname',action='store',
          help='second instance name')
     @args('-s',dest='schemaname',required=True,action='store',nargs='*',
-         help=' schema list')
+          help=' schema list. use : between different schemas')
     def schema(self,**kwargs):
         self._getDbObj(**kwargs)
         #检查输入的schemaname参数格式，如果带有:则代表两个不同schema的对比
