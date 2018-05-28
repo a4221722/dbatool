@@ -33,31 +33,31 @@ class Check():
             return
 
         #创建两个数据连接对象
-        whereSt=' where 1=2 '
-        whereId=''
-        whereNm=''
+        whereStList=[]
         if kwargs['fstid']:
-            whereId += ' or id in ('+str(kwargs['fstid'])+')'
+            whereStList.append(' where id in ('+str(kwargs['fstid'])+')')
         if kwargs['fstname']:
-            whereNm += " or name in('"+kwargs['fstname']+"')"
+            whereStList.append(" where name in('"+kwargs['fstname']+"')")
         if kwargs['secid']:
-            whereId += ' or id in ('+str(kwargs['secid'])+')'
+            whereStList.append(' where id in ('+str(kwargs['secid'])+')')
         if kwargs['secname']:
-            whereNm += " or name in('"+kwargs['secname']+"')"
-        whereSt = whereSt + whereId + whereNm
+            whereStList.append(" where name in('"+kwargs['secname']+"')")
 
         colList = [col for col in colMap[tabMap[typ]] if col.lower() in connectList]
-        selectSql='select '+','.join(str(col) for col in colList)+' from '+tabMap[typ]+whereSt
-        self._dbCursor.execute(selectSql)
-        result=self._dbCursor.fetchall()
+        connList = []
+        for whereSt in whereStList:
+            selectSql='select '+','.join(str(col) for col in colList)+' from '+tabMap[typ]+whereSt
+            self._dbCursor.execute(selectSql)
+            result=self._dbCursor.fetchall()
+            connList.append(result[0])
 
-        if len(result)<2:
+        if len(connList)<2:
             print('at least one instance do not exist!')
             return
 
         #使用取到的数据库连接信息，分别创建对应的数据对象，连接正常的放到列表里
         self.dbObjList = []
-        for colList in result:
+        for colList in connList:
             dbObj = objMap[typ](*colList)
             connectSt=dbObj.checkConnect()
             if connectSt:
