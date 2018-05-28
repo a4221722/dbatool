@@ -7,6 +7,7 @@ from settings import *
 from toolmodule.oradb import Oradb
 from toolmodule.mydb import Mydb
 from toolmodule.logger import Logger
+from toolmodule.prncolor import color
 
 
 objMap = {
@@ -105,20 +106,20 @@ class Check():
 
             print('\n'+tn.upper()+': ')
             if not tabStr0:
-                print('\n   table '+schema0+'.'+tab0+' does not exist in '+self.dbObjList[0].name)
+                print(color('\n   table '+schema0+'.'+tab0+' does not exist in '+self.dbObjList[0].name,'r'))
                 continue
             if not tabStr1:
-                print('\n   table '+schema1+'.'+tab1+' does not exist in '+self.dbObjList[1].name)
+                print(color('\n   table '+schema1+'.'+tab1+' does not exist in '+self.dbObjList[1].name,'r'))
                 continue
 
             if tabStr0 == tabStr1:
                 print('\n   '+tn+' are the same on both sides.')
             else:
-                print('\n   '+self.dbObjList[0].name+'.'+schema0+'.'+tab0+': ')
+                print(color('\n   '+self.dbObjList[0].name+'.'+schema0+'.'+tab0+': ','r'))
                 print(' '.join(format(str(val),'^30') for val in headList0))
                 for row in (tabStr0-tabStr1):
                     print('|'.join(format(str(val),'>30') for val in row))
-                print('\n   '+self.dbObjList[1].name+'.'+schema1+'.'+tab1+': ')
+                print(color('\n   '+self.dbObjList[1].name+'.'+schema1+'.'+tab1+': ','r'))
                 print(' '.join(format(str(val),'^30') for val in headList1))
                 for row in (tabStr1-tabStr0):
                     print('|'.join(format(str(val),'>30') for val in row))
@@ -129,11 +130,11 @@ class Check():
             if tabStr0 == tabStr1:
                 print('   '+tn+' has same indexes on both sides.')
             else:
-                print('\n   '+self.dbObjList[0].name+'.'+schema0+'.'+tab0+': ')
+                print(color('\n   '+self.dbObjList[0].name+'.'+schema0+'.'+tab0+': ','r'))
                 print(' '.join(format(str(val),'^30') for val in headList0))
                 for row in (tabStr0-tabStr1):
                     print('|'.join(format(str(val),'>30') for val in row))
-                print('\n   '+self.dbObjList[1].name+'.'+schema1+'.'+tab1+': ')
+                print(color('\n   '+self.dbObjList[1].name+'.'+schema1+'.'+tab1+': ','r'))
                 print(' '.join(format(str(val),'^30') for val in headList1))
                 for row in (tabStr1-tabStr0):
                     print('|'.join(format(str(val),'>30') for val in row))
@@ -177,12 +178,15 @@ class Check():
                 seqSet1=self.dbObjList[1].getSeqSet(schema1)
 
                 if seqSet0 == seqSet1:
-                    print('\n   '+schema0+' and '+schema1+' has same sequences on both sides.')
+                    if len(seqSet0) == 0:
+                        print('\n   '+schema0+' and '+schema1+' has no sequences.')
+                    else:
+                        print('\n   '+schema0+' and '+schema1+' has same sequences on both sides.')
                 else:
-                    print('\n   '+self.dbObjList[0].name+'.'+schema0+':')
+                    print(color('\n   '+self.dbObjList[0].name+'.'+schema0+':','r'))
                     for seq in (seqSet0-seqSet1):
                         print(format(seq,'>40'))
-                    print('\n   '+self.dbObjList[1].name+'.'+schema1+':')
+                    print(color('\n   '+self.dbObjList[1].name+'.'+schema1+':','r'))
                     for seq in (seqSet1-seqSet0):
                         print(format(seq,'>40'))
 
