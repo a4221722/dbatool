@@ -26,7 +26,7 @@ objMap = {
 def get_continuation_tokens(cli, width):
         return [(Token, '.' * width)]
 
-dmlPattern = re.compile(r'^\s*(/\*.*\*/)?\s*(alter|comment|grant|create|update|insert).+$',re.DOTALL)
+dmlPattern = re.compile(r'^\s*(/\*.*\*/)?\s*(alter|comment|grant|create|update|insert|drop|delete).+$',re.DOTALL)
 selPattern = re.compile(r'^\s*((--.*\n+)|(/\*.*\*/))*\s*(select).+$',re.DOTALL)
 
 #astarBgPatter = re.compile(r'^\s*/\*.*$',re.DOTALL)
