@@ -28,6 +28,7 @@ def get_continuation_tokens(cli, width):
 
 dmlPattern = re.compile(r'^\s*(/\*.*\*/)?\s*(alter|comment|grant|create|update|insert|drop|delete).+$',re.DOTALL)
 selPattern = re.compile(r'^\s*((--.*\n+)|(/\*.*\*/))*\s*(select).+$',re.DOTALL)
+procPattern = re.compile(r'^\s*exec\s+(\w+\.?\S+)\s*$')
 
 #astarBgPatter = re.compile(r'^\s*/\*.*$',re.DOTALL)
 #astarEdPatter = re.compile(r'^\s*\*/.*$',re.DOTALL)
@@ -202,6 +203,13 @@ class Sql():
                     elif selPattern.match(text.lower()):
                         for dbObj in dbObjList:
                             dbObj.sel(text,report)
+                    elif procPattern.match(text.lower()):
+                        if not text.endswith(')'):
+                            print('Procedure call must end with ()')
+                            continue
+                        mt = procPattern.match(text.lower())
+                        for dbObj in dbObjList:
+                            dbObj.proc(mt.group(1),rf)
                     else:
                         print('Invalid Sql')
                         continue
@@ -232,7 +240,7 @@ class Sql():
                 print('Operation cancelled.')
                 continue
             except Exception as err:
-                cmdLogger.write(str(err),'error')
+                self.cmdLogger.write(str(err),'error')
                 print(str(err))
                 return
 

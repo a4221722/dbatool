@@ -70,6 +70,33 @@ class Oradb():
                 for row in result:
                     ws.append(row)
                 wb.save('./report/'+'_'.join([self.name,datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")])+'.xlsx')
+    def proc(self,statement,rf):
+        procName = statement[:statement.find('(')]
+        procArgs = statement[statement.find('(')+1:len(statement)-1]
+        argsList = procArgs.split(',')
+        args = []
+        kwargs = {}
+        for arg in argsList:
+            if arg.find('=')>0:
+                if arg[:arg.find('=')].count("'")>0:
+                    args.append(arg)
+                else:
+                    kwargs[arg[:arg.find('=')]]=arg[arg.find('=')+1]
+            else:
+                args.append(arg)
+        try:
+            self.oraCursor=self.oraConnect.cursor()
+            self.oraCursor.callproc(procName,parameters=args,keywordParameters=kwargs)
+        except Exception as err:
+            #self.execLogger.write('#'*ceil(get_terminal_size().columns*0.5)+'\n'+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'\n'+statement+'\n'+str(err),'error')
+            print(self.name+':'+str(err)+'\n'+statement)
+            if rf:
+                rf.write('\n'+self.name+': '+str(err))
+        else:
+            #self.execLogger.write('#'*ceil(get_terminal_size().columns*0.5)+'\n'+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'\n'+statement+'\n'+' statement executed successfully.','error')
+            if rf:
+                rf.write('\n'+self.name+': statement executed successfully.')
+            print(self.name+': statement executed successfully.')
 
     def maniRt(self,val):
         if isinstance(val,datetime.date):

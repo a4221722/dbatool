@@ -24,9 +24,9 @@ def fetch_func_args(func,matchargs):
 if __name__ == '__main__':
     
     parser = gn_parser()
+    cmdLogger=Logger(logname=logname,filename=__file__)
     #history=FileHistory('./history/cmd.his')
     history=InMemoryHistory()
-    cmdLogger=Logger(logname=logname,filename=__file__)
     print(cmdTitle)
     while True:
         try:
