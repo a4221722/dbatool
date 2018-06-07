@@ -20,10 +20,10 @@ tabMap = {
     'mysql':'mysql_instances',
 }
 
-#表名和列名的映射关系，要和sqlite中的表结构一致
+#表名和列名的映射关系，要和sqlite中的表结构一致,用于inst show展示
 colMap = {
-    'oracle_instances':['id','name','host','port','sid','username','password','charset'],
-    'mysql_instances':['id','name','host','port','username','password','charset'],
+    'oracle_instances':['id','group','name','host','port','sid','username','password','charset'],
+    'mysql_instances':['id','group','name','host','port','username','password','charset'],
 }
 
 #建立数据库连接需要的字段,并集

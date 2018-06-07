@@ -85,10 +85,12 @@ class Sql():
     @args('-t',dest='typ',required=True, action='store',
          choices=dbChoices,default='oracle',
          help='instance type')
-    @args('-d',dest='id',action='store',nargs='*',
+    @args('-d',dest='id',action='store',
          help='ids of instances to be connected')
-    @args('-n',dest='name',action='store',nargs='*',
+    @args('-n',dest='name',action='store',
          help='names of instances to be connected')
+    @args('-g',dest='group',action='store',
+         help='groups of instances to be connected')
 
     def exe(self,**kwargs):
 
@@ -96,20 +98,21 @@ class Sql():
         typ=kwargs['typ']
 
         #id或者name至少输入一个
-        if not kwargs['id'] and not kwargs['name']:
-            print("'-d' or '-n' must be assigned!")
+        if not kwargs['id'] and not kwargs['name'] and not kwargs['group']:
+            print("'-d', '-n'  or '-g' must be assigned!")
             return
 
         #根据输入的id拼接where条件，从sqlite里拿出数据库连接信息
-        if (kwargs['id'] and kwargs['id'][0] == 'all') or (kwargs['name'] and kwargs['name'][0] == 'all'):
+        if (kwargs['id'] and kwargs['id'] == 'all') or (kwargs['name'] and kwargs['name'] == 'all'):
             whereSt=' where 1=1 '
         else:
             whereSt=' where 1=2 '
             whereId=''
             whereNm=''
+            whereGp=''
             if kwargs['id']:
                 whereId = ' or id in ('
-                for id in kwargs['id']:
+                for id in kwargs['id'].split(','):
                     if id.isdigit():
                         whereId += str(id)+','
                     else:
@@ -118,10 +121,13 @@ class Sql():
                 whereId = whereId.rstrip(',')+')'
             if kwargs['name']:
                 whereNm = ' or name in('
-                for name in kwargs['name']:
+                for name in kwargs['name'].split(','):
                     whereNm += "'"+name+"',"
                 whereNm = whereNm.rstrip(',')+')'
-            whereSt = whereSt + whereId + whereNm
+            if kwargs['group']:
+                groups = kwargs['group'].split(',')
+                whereGp = """ or "group" in ('"""+"','".join(groups)+"')"
+            whereSt = whereSt + whereId + whereNm + whereGp
 
         colList = [col for col in colMap[tabMap[typ]] if col.lower() in connectList]
         selectSql='select '+','.join(str(col) for col in colList)+' from '+tabMap[typ]+whereSt

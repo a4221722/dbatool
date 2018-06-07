@@ -21,7 +21,7 @@ class Inst():
     def show(self,**kwargs):
         typ=kwargs['typ']
         colList = [col for col in colMap[tabMap[typ]] if col.lower() not in ('password')]
-        selectSql='select '+','.join(str(col) for col in colList)+' from '+tabMap[typ]
+        selectSql='select "'+'","'.join(str(col) for col in colList)+'" from '+tabMap[typ]
         self._dbCursor.execute(selectSql)
         print('|'.join(format(header[0],'>10')for header in self._dbCursor.description))
         for colList in self._dbCursor:
