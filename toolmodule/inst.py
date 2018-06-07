@@ -38,22 +38,24 @@ class Inst():
     @args('-p',dest='port',action='store',default=1521,
          help='instance port')
     @args('-s',dest='sid',action='store',
-         help='instance name')
+         help='service name')
     @args('-u',dest='username',required=True,action='store',
          help='database user name')
     @args('-P',dest='password',required=True,action='store',
          help='database password')
     @args('-c',dest='charset',required=True,action='store',
          choices={'gbk','utf-8'},help='database client charset')
+    @args('-g',dest='group',action='store',
+         help='instance group')
     #增加实例信息
     def add(self,**kwargs):
         typ=kwargs['typ']
         if typ == 'oracle' and not kwargs['sid']:
-            print('Should provide sid for Oracle instance')
+            print('Should provide service name for Oracle instance')
             return
         try:
             colList = [col for col in colMap[tabMap[typ]] if col.lower() not in ('id')]
-            insertSql = 'insert into '+tabMap[typ]+'('+','.join(colList)+') values('+ len(colList)*'?,'
+            insertSql = 'insert into '+tabMap[typ]+'("'+'","'.join(colList)+'") values('+ len(colList)*'?,'
             insertSql = insertSql.rstrip(',')+')'
             kwargs['password'] = prpcrypt.encrypt(kwargs['password'])
             arg=[ val for key,val in kwargs.items() if key in colList]
