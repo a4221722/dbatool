@@ -104,7 +104,6 @@ class Check():
             headList0,tabStr0=self.dbObjList[0].getTabStr(schema0,tab0)
             headList1,tabStr1=self.dbObjList[1].getTabStr(schema1,tab1)
 
-            print('\n'+tn.upper()+': ')
             if not tabStr0:
                 print(color('\n   table '+schema0+'.'+tab0+' does not exist in '+self.dbObjList[0].name,'r'))
                 continue
