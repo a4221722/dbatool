@@ -8,6 +8,7 @@ from openpyxl import Workbook
 from toolmodule.aes_decryptor import Prpcrypt
 import json
 from toolmodule.logger import Logger
+from settings import logname
 
 prpcrypt=Prpcrypt()
 
@@ -20,6 +21,7 @@ class Oradb():
         self.username=username
         self.password=prpcrypt.decrypt(password)
         self.charset=charset
+        self.cmdLogger=Logger(logname=logname,filename=__file__)
 
     def checkConnect(self):
         try:
@@ -153,6 +155,35 @@ class Oradb():
         else:
             return headerList,strSet
 
+    def getSchSet(self):
+        try:
+            selectSql="""select username
+            from dba_users
+            where username not in ('SYSTEM',
+                            'WMSYS',
+                            'XDB',
+                            'SYS',
+                            'SCOTT',
+                            'QMONITOR',
+                            'OUTLN',
+                            'ORDSYS',
+                            'ORDDATA',
+                            'OJVMSYS',
+                            'MDSYS',
+                            'LBACSYS',
+                            'DVSYS',
+                            'DBSNMP','APEX_040200','AUDSYS','CTXSYS','APEX_030200','EXFSYS','OLAPSYS','SYSMAN','WH_SYNC','GSMADMIN_INTERNAL','SI_INFORMTN_SCHEMA','MGMT_VIEW','OWBSYS','APEX_PUBLIC_USER','SPATIAL_WFS_ADMIN_USR','SPATIAL_CSW_ADMIN_USR','DIP','ANONYMOUS','MDDATA','OWBSYS_AUDIT','XS$NULL','APPQOSSYS','ORACLE_OCM','FLOWS_FILES','ORDPLUGINS')"""
+            schSet=set()
+            self.oraCursor=self.oraConnect.cursor()
+            self.oraCursor.execute(selectSql)
+            rt=self.oraCursor.fetchall()
+            for row in rt:
+                schSet.add(row[0])
+        except Exception as err:
+            self.cmdLogger.write(str(err),'error')
+        else:
+            return schSet
+
     def getTabSet(self,schema):
         try:
             selectSql="""select table_name
@@ -166,7 +197,7 @@ class Oradb():
             for row in rt:
                 tabSet.add(row[0])
         except Exception as err:
-            print(str(err))
+            self.cmdLogger.write(str(err),'error')
         else:
             return tabSet
 
@@ -183,7 +214,7 @@ class Oradb():
             for row in rt:
                 seqSet.add(row[0])
         except Exception as err:
-            print(str(err)) 
+            self.cmdLogger.write(str(err),'error')
         else:
             return seqSet
 

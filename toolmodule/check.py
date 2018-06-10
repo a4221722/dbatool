@@ -113,7 +113,8 @@ class Check():
                 continue
 
             if tabStr0 == tabStr1:
-                print('\n   '+tn+' are the same on both sides.')
+                pass
+                #print('\n   '+tn+' are the same on both sides.')
             else:
                 print(color('\n   '+self.dbObjList[0].name+'.'+schema0+'.'+tab0+': ','r'))
                 print(' '.join(format(str(val),'^30') for val in headList0))
@@ -128,7 +129,8 @@ class Check():
             headList1,tabStr1=self.dbObjList[1].getIndStr(schema1,tab1)
 
             if tabStr0 == tabStr1:
-                print('   '+tn+' has same indexes on both sides.')
+                pass
+                #print('   '+tn+' has same indexes on both sides.')
             else:
                 print(color('\n   '+self.dbObjList[0].name+'.'+schema0+'.'+tab0+': ','r'))
                 print(' '.join(format(str(val),'^30') for val in headList0))
@@ -154,9 +156,13 @@ class Check():
     @args('-s',dest='schemaname',required=True,action='store',nargs='*',
           help=' schema list. use : between different schemas')
     def schema(self,**kwargs):
-        self._getDbObj(**kwargs)
+        if __name__ == 'toolmodule.check':
+            pass
+        else:
+            self._getDbObj(**kwargs)
         #检查输入的schemaname参数格式，如果带有:则代表两个不同schema的对比
         for schemaComp in kwargs['schemaname']:
+            print('\n'+schemaComp)
             if schemaComp.find(':')>0:
                 schemaCompList = schemaComp.split(':')
                 schema0=schemaCompList[0]
@@ -179,9 +185,11 @@ class Check():
 
                 if seqSet0 == seqSet1:
                     if len(seqSet0) == 0:
-                        print('\n   '+schema0+' and '+schema1+' has no sequences.')
+                        pass
+                        #print('\n   '+schema0+' and '+schema1+' has no sequences.')
                     else:
-                        print('\n   '+schema0+' and '+schema1+' has same sequences on both sides.')
+                        pass
+                        #print('\n   '+schema0+' and '+schema1+' has same sequences on both sides.')
                 else:
                     print(color('\n   '+self.dbObjList[0].name+'.'+schema0+':','r'))
                     for seq in (seqSet0-seqSet1):
@@ -189,4 +197,34 @@ class Check():
                     print(color('\n   '+self.dbObjList[1].name+'.'+schema1+':','r'))
                     for seq in (seqSet1-seqSet0):
                         print(format(seq,'>40'))
+
+    @args('-t',dest='typ',required=True, action='store',
+         choices={'oracle','mysql'},default='oracle',
+         help='instance type')
+    @args('-d',dest='fstid',action='store',
+         type=int,help='first instance id')
+    @args('-n',dest='fstname',action='store',
+         help='first instance name')
+    @args('-D',dest='secid',action='store',
+         type=int,help='second instance id')
+    @args('-N',dest='secname',action='store',
+         help='second instance name')
+    @args('-m',dest='map',action='store',
+          help='map relation, for example: _a')
+    def db(self,**kwargs):
+        if not kwargs['map']:
+            kwargs['map'] = ''
+        self._getDbObj(**kwargs)
+        schSet0 = self.dbObjList[0].getSchSet()
+        schSet1 = self.dbObjList[1].getSchSet()
+        kwargs['schemaname'] = []
+        if not schSet0:
+            print(self.dbObjList[0].name+' has no schemas!')
+            return
+        if not schSet1:
+            print(self.dbObjList[1].name+' has no schemas!')
+            return
+        for sch in schSet0:
+            kwargs['schemaname'].append(sch+':'+sch+kwargs['map'])
+        self.schema(**kwargs)
 
