@@ -17,6 +17,7 @@ import os
 from math import ceil
 from os import get_terminal_size
 import datetime
+from threading import Thread
 
 objMap = {
     'oracle':Oradb,
@@ -26,7 +27,22 @@ objMap = {
 def get_continuation_tokens(cli, width):
         return [(Token, '.' * width)]
 
-dmlPattern = re.compile(r'^\s*(/\*.*\*/)?\s*(alter|comment|grant|create|update|insert|drop|delete).+$',re.DOTALL)
+class workThread(Thread):
+    def __init__(self,func,args=()):
+        super(workThread,self).__init__()
+        self.func = func
+        self.args = args
+
+    def run(self):
+        self.result = self.func(*self.args)
+
+    def get_result(self):
+        try:
+            return self.result
+        except Exception:
+            return None
+
+dmlPattern = re.compile(r'^\s*(/\*.*\*/)?\s*(alter|comment|grant|create|update|insert|drop|delete|truncate|revoke).+$',re.DOTALL)
 selPattern = re.compile(r'^\s*((--.*\n+)|(/\*.*\*/))*\s*(select).+$',re.DOTALL)
 procPattern = re.compile(r'^\s*exec\s+(\w+\.?\S+)\s*$')
 
@@ -204,8 +220,12 @@ class Sql():
                             rf=None
                     elif dmlPattern.match(text.lower()):
                         text=text.rstrip(';')
+                        dmlThreadList = []
                         for dbObj in dbObjList:
-                            dbObj.exec(text,rf)
+                            t=workThread(dbObj.exec,(text,rf))
+                            dmlThreadList.append(t)
+                            t.start()
+                            #dbObj.exec(text,rf)
                     elif selPattern.match(text.lower()):
                         for dbObj in dbObjList:
                             dbObj.sel(text,report)

@@ -32,7 +32,7 @@ class Oradb():
         else:
             print(self.name+' connect OK.')
             return True
-
+    #处理dml和ddl语句
     def exec(self,statement,rf):
         #self.execLogger=Logger(logname=logPath,filename=__file__)
         try:
@@ -46,8 +46,8 @@ class Oradb():
         else:
             #self.execLogger.write('#'*ceil(get_terminal_size().columns*0.5)+'\n'+datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")+'\n'+statement+'\n'+' statement executed successfully.','error')
             if rf:
-                rf.write('\n'+self.name+': statement executed successfully.')
-            print(self.name+': statement executed successfully.')
+                rf.write('\n'+self.name+', affected rows: '+str(self.oraCursor.rowcount))
+            print(self.name+', affected rows: '+str(self.oraCursor.rowcount))
 
     def sel(self,statement,report):
         try:
@@ -133,7 +133,7 @@ class Oradb():
     def getIndStr(self,schema,tab):
         try:
             selectSql="""select a.index_name
-            ,a.COLUMN_NAME
+            ,listagg(a.COLUMN_NAME,',') within group (order by a.column_position) columns
             ,a.DESCEND
             ,b.index_type
             ,b.uniqueness
@@ -141,7 +141,7 @@ class Oradb():
             where a.index_owner=b.owner
             and a.index_name=b.index_name
             and a.table_owner='"""+schema.upper()+"""'
-            and a.table_name='"""+tab.upper()+"'"
+            and a.table_name='"""+tab.upper()+"' group by a.index_name,a.DESCEND,b.index_type,b.uniqueness"
 
             strSet=set()
             self.oraCursor=self.oraConnect.cursor()
