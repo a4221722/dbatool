@@ -8,6 +8,7 @@ from toolmodule.oradb import Oradb
 from toolmodule.mydb import Mydb
 from toolmodule.logger import Logger
 from toolmodule.prncolor import color
+from toolmodule.dtlog import dtLog
 
 
 objMap = {
@@ -20,7 +21,6 @@ class Check():
         self._dbConnect = sqlite3.connect(dbPath)
         self._dbCursor = self._dbConnect.cursor()
         self.dbObjList=''
-        self.cmdLogger=Logger(logname=logname,filename=__file__)
 
     def _getDbObj(self,**kwargs):
         typ=kwargs['typ']

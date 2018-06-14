@@ -7,7 +7,7 @@ import datetime
 from openpyxl import Workbook
 from toolmodule.aes_decryptor import Prpcrypt
 import json
-from toolmodule.logger import Logger
+from toolmodule.dtlog import dtLog
 from settings import logname
 
 prpcrypt=Prpcrypt()
@@ -21,7 +21,6 @@ class Oradb():
         self.username=username
         self.password=prpcrypt.decrypt(password)
         self.charset=charset
-        self.cmdLogger=Logger(logname=logname,filename=__file__)
 
     def checkConnect(self):
         try:
@@ -180,7 +179,7 @@ class Oradb():
             for row in rt:
                 schSet.add(row[0])
         except Exception as err:
-            self.cmdLogger.write(str(err),'error')
+            dtLog(str(err),'error')
         else:
             return schSet
 
@@ -197,7 +196,7 @@ class Oradb():
             for row in rt:
                 tabSet.add(row[0])
         except Exception as err:
-            self.cmdLogger.write(str(err),'error')
+            dtLog(str(err),'error')
         else:
             return tabSet
 
@@ -214,7 +213,7 @@ class Oradb():
             for row in rt:
                 seqSet.add(row[0])
         except Exception as err:
-            self.cmdLogger.write(str(err),'error')
+            dtLog(str(err),'error')
         else:
             return seqSet
 

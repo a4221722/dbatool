@@ -4,7 +4,7 @@ __authot__='luoji'
 from prompt_toolkit import prompt
 from prompt_toolkit.history import InMemoryHistory,FileHistory
 from toolmodule.parser import gn_parser,cmdTree
-from toolmodule.logger import Logger
+from toolmodule.dtlog import dtLog
 from settings import logname
 import argparse
 import sys
@@ -24,7 +24,6 @@ def fetch_func_args(func,matchargs):
 if __name__ == '__main__':
     
     parser = gn_parser()
-    cmdLogger=Logger(logname=logname,filename=__file__)
     #history=FileHistory('./history/cmd.his')
     history=InMemoryHistory()
     print(cmdTitle)
@@ -57,5 +56,5 @@ if __name__ == '__main__':
             print('Operation cancelled.')
             continue
         except Exception as err:
-            cmdLogger.write(str(err),'error')
+            dtLog(str(err),'error')
             print('Invalid operatioin.')
