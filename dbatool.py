@@ -2,6 +2,7 @@
 # -*- coding=utf-8 -*-
 __authot__='luoji'
 from prompt_toolkit import prompt
+from prompt_toolkit import PromptSession
 from prompt_toolkit.history import InMemoryHistory,FileHistory
 from toolmodule.parser import gn_parser,cmdTree
 from toolmodule.dtlog import dtLog
@@ -24,12 +25,13 @@ def fetch_func_args(func,matchargs):
 if __name__ == '__main__':
     
     parser = gn_parser()
-    #history=FileHistory('./history/cmd.his')
-    history=InMemoryHistory()
+    #cmdHistory=FileHistory('./history/cmd.his')
+    cmdHistory=InMemoryHistory()
+    session = PromptSession(history=cmdHistory)
     print(cmdTitle)
     while True:
         try:
-            text = prompt(promptTitle,history=history)
+            text = session.prompt(promptTitle)
             text = text.strip()
             if text.lower() in ('exit','quit'):
                 break

@@ -2,8 +2,8 @@
 # -*- coding=utf-8 -*-
 __author__ = 'luoji'
 from prompt_toolkit import prompt
-from prompt_toolkit.token import Token
 from prompt_toolkit.history import InMemoryHistory,FileHistory
+from prompt_toolkit.key_binding import KeyBindings
 from toolmodule.args import args
 import sqlite3
 from settings import *
@@ -14,18 +14,39 @@ import re
 from toolmodule.logger import Logger
 #import codecs
 import os
+import pdb
 from math import ceil
 from os import get_terminal_size
 import datetime
 from threading import Thread
-
+from prompt_toolkit import PromptSession
+from prompt_toolkit.keys import Keys
+from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.filters import Condition
 objMap = {
     'oracle':Oradb,
     'mysql':Mydb
 }
 
-def get_continuation_tokens(cli, width):
-        return [(Token, '.' * width)]
+def prompt_continuation(width, line_number, is_soft_wrap):
+        return  '.' * width
+
+#@Condition
+#def is_multi_line(line):
+#    print(line)
+#    return True
+    #if line and line.strip() and not line.strip().endswith(";"):
+    #    return True
+    #else:
+    #    return False
+
+bindings = KeyBindings()
+@bindings.add('c-m')
+def eof(event):
+    if event.cli.current_buffer.text.endswith(';'):
+        event.current_buffer.validate_and_handle()
+    else:
+        event.cli.current_buffer.insert_text('\n')
 
 class workThread(Thread):
     def __init__(self,func,args=()):
@@ -55,8 +76,8 @@ class Sql():
     def __init__(self):
         self._dbConnect = sqlite3.connect(dbPath)
         self._dbCursor = self._dbConnect.cursor()
-        #self.history=FileHistory('./history/sql.his')
-        self.history=InMemoryHistory()
+        #self.cmdHistory=FileHistory('./history/sql.his')
+        self.cmdHistory=InMemoryHistory()
         self.cmdLogger=Logger(logname=logname,filename=__file__)
 
     def _maniFile(self,inFile,charset):
@@ -174,14 +195,16 @@ class Sql():
                 print("please enter Y or N")
 
         #进入sql界面
-        print("Enter your statement ending with ';'. Press 'Esc'+'Enter' to complete the input.")
+        print("Enter your statement ending with ';'. ")
         report=0
         record=0
         rf=None
+        sqlSession = PromptSession(history = self.cmdHistory)
         while True:
             #是否开启报表功能
             try:
-                text = prompt("SQL> ",multiline=True,lexer=PostgresLexer,get_continuation_tokens=get_continuation_tokens,history=self.history)
+                text = sqlSession.prompt("SQL> ", multiline=True, prompt_continuation=prompt_continuation,key_bindings=bindings)
+                #text = sqlSession.prompt("SQL> ", multiline=is_multi_line, prompt_continuation=prompt_continuation)
                 text=text.strip()
                 if not text:
                     continue
