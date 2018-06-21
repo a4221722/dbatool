@@ -5,7 +5,7 @@ from prompt_toolkit import prompt
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import InMemoryHistory,FileHistory
 from toolmodule.parser import gn_parser,cmdTree
-from toolmodule.dtlog import dtLog
+from utils.logger import Logger
 from settings import logname
 import argparse
 import sys
@@ -27,6 +27,7 @@ if __name__ == '__main__':
     parser = gn_parser()
     #cmdHistory=FileHistory('./history/cmd.his')
     cmdHistory=InMemoryHistory()
+    cmdLogger=Logger(logname=logname,filename=__file__)
     session = PromptSession(history=cmdHistory)
     print(cmdTitle)
     while True:
@@ -58,5 +59,5 @@ if __name__ == '__main__':
             print('Operation cancelled.')
             continue
         except Exception as err:
-            dtLog(str(err),'error')
+            cmdLogger.write(str(err),'error')
             print('Invalid operatioin.')

@@ -7,11 +7,11 @@ from prompt_toolkit.key_binding import KeyBindings
 from toolmodule.args import args
 import sqlite3
 from settings import *
-from toolmodule.oradb import Oradb
-from toolmodule.mydb import Mydb
+from dao.oradb import Oradb
+from dao.mydb import Mydb
 from pygments.lexers.sql import PostgresLexer
 import re
-from toolmodule.logger import Logger
+from utils.logger import Logger
 #import codecs
 import os
 import pdb
@@ -31,19 +31,11 @@ objMap = {
 def prompt_continuation(width, line_number, is_soft_wrap):
         return  '.' * width
 
-#@Condition
-#def is_multi_line(line):
-#    print(line)
-#    return True
-    #if line and line.strip() and not line.strip().endswith(";"):
-    #    return True
-    #else:
-    #    return False
 
 bindings = KeyBindings()
 @bindings.add('c-m')
 def eof(event):
-    if event.cli.current_buffer.text.endswith(';'):
+    if event.cli.current_buffer.text.rstrip().endswith(';'):
         event.current_buffer.validate_and_handle()
     else:
         event.cli.current_buffer.insert_text('\n')

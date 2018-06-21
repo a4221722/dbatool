@@ -2,7 +2,7 @@
 # -*- coding=utf-8 -*-
 __author__ = 'luoji'
 
-from toolmodule.basicdb import BasicDb
+from dao.basicdb import BasicDb
 
 class Mydb(BasicDb):
     pass

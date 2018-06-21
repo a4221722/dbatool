@@ -4,11 +4,11 @@ __author__ = 'luoji'
 from toolmodule.args import args
 import sqlite3
 from settings import *
-from toolmodule.oradb import Oradb
-from toolmodule.mydb import Mydb
-from toolmodule.logger import Logger
+from dao.oradb import Oradb
+from dao.mydb import Mydb
+from utils.logger import Logger
 from toolmodule.prncolor import color
-from toolmodule.dtlog import dtLog
+import pdb
 
 
 objMap = {
@@ -21,6 +21,7 @@ class Check():
         self._dbConnect = sqlite3.connect(dbPath)
         self._dbCursor = self._dbConnect.cursor()
         self.dbObjList=''
+        self.cmdLogger=Logger(logname=logname,filename=__file__)
 
     def _getDbObj(self,**kwargs):
         typ=kwargs['typ']
@@ -90,7 +91,9 @@ class Check():
             if tn.find('.') == -1:
                 print('format must be schema.table')
                 return
-        if not self.dbObjList:
+        if kwargs.get('schemac') and kwargs['schemac']:
+            pass
+        else:
             self._getDbObj(**kwargs)
 
         for tn in kwargs['tablename']:
@@ -155,7 +158,7 @@ class Check():
     @args('-s',dest='schemaname',required=True,action='store',nargs='*',
           help=' schema list. use : between different schemas')
     def schema(self,**kwargs):
-        if __name__ == 'toolmodule.check':
+        if kwargs.get('dbc') and kwargs['dbc']:
             pass
         else:
             self._getDbObj(**kwargs)
@@ -175,6 +178,7 @@ class Check():
             tabKwargs={key:val for key,val in kwargs.items() if key != 'schemaname'}
             tabKwargs['tablename']=tabList
             print('\n'+'='*25+'TABLE'+'='*25)
+            tabKwargs['schemac'] = True
             self.table(**tabKwargs)
 
             if kwargs['typ'] == 'oracle':
@@ -225,5 +229,6 @@ class Check():
             return
         for sch in schSet0:
             kwargs['schemaname'].append(sch+':'+sch+kwargs['map'])
+        kwargs['dbc'] = True
         self.schema(**kwargs)
 
