@@ -14,15 +14,11 @@ import re
 from utils.logger import Logger
 #import codecs
 import os
-import pdb
 from math import ceil
 from os import get_terminal_size
 import datetime
 from threading import Thread
 from prompt_toolkit import PromptSession
-from prompt_toolkit.keys import Keys
-from prompt_toolkit.key_binding import KeyBindings
-from prompt_toolkit.filters import Condition
 objMap = {
     'oracle':Oradb,
     'mysql':Mydb
@@ -57,7 +53,7 @@ class workThread(Thread):
 
 dmlPattern = re.compile(r'^\s*(/\*.*\*/)?\s*(alter|comment|grant|create|update|insert|drop|delete|truncate|revoke).+$',re.DOTALL)
 selPattern = re.compile(r'^\s*((--.*\n+)|(/\*.*\*/))*\s*(select).+$',re.DOTALL)
-procPattern = re.compile(r'^\s*exec\s+(\w+\.?\S+)\s*$')
+procPattern = re.compile(r'^\s*exec\s+(\w+\.?.+)\s*$')
 
 #astarBgPatter = re.compile(r'^\s*/\*.*$',re.DOTALL)
 #astarEdPatter = re.compile(r'^\s*\*/.*$',re.DOTALL)
@@ -93,13 +89,6 @@ class Sql():
                     yield sql
                 else:
                     print('Error: unsupported operation: '+sql)
-                    #if sql.rstrip('\n').strip().endswith(';'):
-                    #    sql=sql.rstrip('\n').strip().rstrip(';')
-                    #    if dmlPattern.match(sql.lower()):
-                    #        yield sql.rstrip(';\n')
-                    #    else:
-                    #        print('Error: unsupported operation: '+sql)
-                    #    sql=''
         except Exception as err:
             self.cmdLogger.write(str(err),'error')
             print('check file previledges or contents')
@@ -249,6 +238,7 @@ class Sql():
                             print('Procedure call must end with ()')
                             continue
                         mt = procPattern.match(text.lower())
+                        print(mt.group(1))
                         for dbObj in dbObjList:
                             dbObj.proc(mt.group(1),rf)
                     else:

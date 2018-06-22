@@ -82,9 +82,9 @@ class Oradb():
         for arg in argsList:
             if arg.find('=')>0:
                 if arg[:arg.find('=')].count("'")>0:
-                    args.append(arg)
+                    args.append(arg.strip().strip("'"))
                 else:
-                    kwargs[arg[:arg.find('=')]]=arg[arg.find('=')+1]
+                    kwargs[arg[:arg.find('=')].strip()]=arg[arg.find('=')+1:].strip().strip("'")
             else:
                 args.append(arg)
         try:

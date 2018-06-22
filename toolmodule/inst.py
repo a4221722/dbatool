@@ -24,8 +24,9 @@ class Inst():
         selectSql='select "'+'","'.join(str(col) for col in colList)+'" from '+tabMap[typ]
         self._dbCursor.execute(selectSql)
         print('|'.join(format(header[0],'>10')for header in self._dbCursor.description))
-        for colList in self._dbCursor:
-            print('|'.join([format(val,'>10') for val in colList]))
+        result = self._dbCursor.fetchall()
+        for colList in result:
+            print('|'.join([format(str(val),'>10') for val in colList]))
 
     #添加args
     @args('-t',dest='typ',action='store',
