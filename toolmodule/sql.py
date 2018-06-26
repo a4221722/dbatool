@@ -184,7 +184,7 @@ class Sql():
         while True:
             #是否开启报表功能
             try:
-                text = sqlSession.prompt("SQL> ", multiline=True, prompt_continuation=prompt_continuation,key_bindings=bindings)
+                text = sqlSession.prompt(datetime.datetime.now().strftime('%y-%m-%d %H:%M:%S')+" SQL> ", multiline=True, prompt_continuation=prompt_continuation,key_bindings=bindings)
                 #text = sqlSession.prompt("SQL> ", multiline=is_multi_line, prompt_continuation=prompt_continuation)
                 text=text.strip()
                 if not text:
