@@ -229,6 +229,8 @@ class Sql():
                             t=workThread(dbObj.exec,(text,rf))
                             dmlThreadList.append(t)
                             t.start()
+                        for dt in dmlThreadList:
+                            dt.join()
                             #dbObj.exec(text,rf)
                     elif selPattern.match(text.lower()):
                         for dbObj in dbObjList:
