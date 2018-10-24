@@ -19,3 +19,10 @@ python dbatool.py
 ## dml生成操作日志：
 进入sql界面: record on;
 record off;关闭
+
+## 建表
+````
+CREATE TABLE mysql_instances(id integer primary key autoincrement,name varchar(10),host varchar(16),port integer,username varchar(30),password varchar(100), charset varchar(10), "group" varchar(30), constraint uk_my unique(host,port));
+
+CREATE TABLE oracle_instances(id integer primary key autoincrement,name varchar(10),host varchar(16),port integer,sid varchar(10),username varchar(30),password varchar(100) , charset varchar(10), "group" varchar(30),constraint uk1_ora unique (host,sid),constraint uk2_ora unique(name));
+````
