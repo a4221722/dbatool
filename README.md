@@ -1,5 +1,6 @@
 # DBATool V1.1
 这是一个多实例db管理工具，出发点是对多套数据库做集中化的命令行管理.
+python 3.7.1
 
 # 使用方法
 source bin/activate
