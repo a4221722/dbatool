@@ -22,8 +22,8 @@ spool off;
 进入sql界面: record on;
 record off;关闭
 
-#部署
-##创建目录
+# 部署
+## 创建目录
 ````
 mkdir log
 mkdir db
