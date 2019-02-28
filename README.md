@@ -22,8 +22,16 @@ spool off;
 进入sql界面: record on;
 record off;关闭
 
+#部署
+##创建目录
+````
+mkdir log
+mkdir db
+````
 ## 建表
 ````
+cd db
+sqlite3 dba.db
 CREATE TABLE mysql_instances(id integer primary key autoincrement,name varchar(10),host varchar(16),port integer,username varchar(30),password varchar(100), charset varchar(10), "group" varchar(30), constraint uk_my unique(host,port));
 
 CREATE TABLE oracle_instances(id integer primary key autoincrement,name varchar(10),host varchar(16),port integer,sid varchar(10),username varchar(30),password varchar(100) , charset varchar(10), "group" varchar(30),constraint uk1_ora unique (host,port,sid),constraint uk2_ora unique(name));
