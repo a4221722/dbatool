@@ -173,7 +173,7 @@ class Sql():
             elif text == 'N':
                 return
             else:
-                print("please enter Y or N")
+                text = prompt("please enter Y or N: ")
 
         #进入sql界面
         print("Enter your statement ending with ';'. ")
@@ -199,6 +199,39 @@ class Sql():
                         for dbObj in dbObjList:
                             func = getattr(dbObj,text)
                             func(rf)
+                    elif re.match(r'^show\s+databases$',text.lower()):
+                        for dbObj in dbObjList:
+                            print(dbObj.name+':')
+                            for row in dbObj.getSchSet():
+                                print(row)
+                    elif re.match(r'^use\s+\S+$',text.lower()):
+                        mt = re.match(r'^use\s+(\S+)$',text.lower())
+                        for dbObj in dbObjList:
+                            print(dbObj.name+':')
+                            dbObj.useDb(mt[1])
+                    elif re.match(r'^show\s+tables$',text.lower()):
+                        for dbObj in dbObjList:
+                            print(dbObj.name+':')
+                            for row in dbObj.getTabSet(dbObj.current_schema):
+                                print(row)
+                    elif re.match(r'^desc\s+(\S+)$',text.lower()):
+                        mt = re.match(r'^desc\s+(\S+)$',text.lower())
+                        if mt[1].find('.')>0:
+                            sch = mt[1][:mt[1].find('.')]
+                            tab = mt[1][mt[1].find('.')+1:]
+                        else:
+                            sch = None
+                            tab = mt[1]
+                        for dbObj in dbObjList:
+                            if sch == None:
+                                sch = dbObj.current_schema
+                            print(dbObj.name+':')
+                            for row in dbObj.getTabStr(sch,tab):
+                                if isinstance(row,set):
+                                    for rw in row:
+                                        print('|'.join([format(rws if rws else ' ','>20') for rws in rw]))
+                                else:
+                                    print('|'.join([format(rw,'>20') for rw in row]))
                     elif re.match(r'^spool(\s+)on$',text.lower()):
                         report=1
                         if not os.path.exists('./report'):

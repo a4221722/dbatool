@@ -33,6 +33,15 @@ class Oradb():
         else:
             print(self.name+' connect OK.')
             return True
+
+    #设置当前schema
+    def useDb(self,currSch):
+        try:
+            self.current_schema = currSch
+        except Exception as err:
+            print(self.name+': '+str(err))
+        else:
+            print(currSch+' set successfully.')
     #处理dml和ddl语句
     def exec(self,statement,rf):
         #self.execLogger=Logger(logname=logPath,filename=__file__)
@@ -117,7 +126,8 @@ class Oradb():
             ,nullable
             from dba_tab_columns
             where owner='"""+schema.upper()+"""'
-            and table_name='"""+tab.upper()+"'"
+            and table_name='"""+tab.upper()+"""'
+            order by COLUMN_ID"""
 
             strSet=set()
             self.oraCursor=self.oraConnect.cursor()
